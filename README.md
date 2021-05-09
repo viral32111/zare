@@ -1,6 +1,6 @@
 # Zare
 
-A slash command Discord bot for interacting with my dedicated server, operating on Cloudflare Workers. 
+A slash command Discord bot for interacting with my dedicated server, operating on Cloudflare Workers.
 
 ## License
 
