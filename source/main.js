@@ -15,7 +15,14 @@ async function processRequest( request ) {
 	const requestBody = await request.clone().text();
 
 	// If those details don't exist then respond with 400 bad request
-	if ( !discordSignature || !discordTimestamp || !requestBody ) return new Response( null, { status: 400 } );
+	if ( !discordSignature || !discordTimestamp || !requestBody ) {
+		return new Response( "You're not meant to be here, fuck off!\n\nhttps://viral32111.com", {
+			status: 403,
+			headers: {
+				"content-type": "text/plain; charset=utf-8"
+			}
+		} );
+	}
 
 	// Verify the signature
 	const isSignatureValid = nacl.sign.detached.verify(
@@ -35,18 +42,73 @@ async function processRequest( request ) {
 
 		// Ack the ping
 		return new Response( JSON.stringify( {
-			type: 1
-		} ), { status: 200, headers: { "content-type": "application/json" } } );
+			"type": 1
+		} ), {
+			status: 200,
+			headers: {
+				"content-type": "application/json"
+			}
+		} );
 
-	// Is this a command execution?
+	// Is this an interaction execution?
 	} else if ( interactionsPayload[ "type" ] == 2 ) {
-		// fancy stuff goes here in the future
+
+		// Process the interaction and store the response data
+		const responseData = await processInteraction( interactionsPayload );
+
+		// Return the response data
+		return new Response( JSON.stringify( responseData ), {
+			status: 200,
+			headers: {
+				"content-type": "application/json"
+			}
+		} );
+
 	}
 
 	// Fallback to responding with a 200 ok
 	return new Response( null, { status: 200 } );
 
 }
+
+// Called to process executed interactions...
+async function processInteraction( interaction ) {
+
+	// Setup variables for later use
+	const commandName = interaction[ "data" ][ "name" ];
+	const guildID = interaction[ "guild_id" ];
+	const channelID = interaction[ "channel_id" ];
+	const userID = interaction[ "member" ][ "user" ][ "id" ];
+	const userName = interaction[ "member" ][ "user" ][ "username" ];
+	const userTag = interaction[ "member" ][ "user" ][ "discriminator" ];
+
+	// Is this the status command?
+	if ( commandName == "status" ) {
+
+		// blah
+		return {
+			"type": 4,
+			"data": {
+				"content": "No status information available yet, I'm still in development!"
+			}
+		}
+
+	// This is an unknown command!
+	} else {
+
+		// Return an error
+		return {
+			"type": 4,
+			"data": {
+				"content": "This command has no handler!",
+				"flags": 64
+			}
+		}
+
+	}
+
+}
+
 
 // Register the event listener for incoming HTTP requests
 addEventListener( "fetch", function( event ) {
