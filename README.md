@@ -1,6 +1,6 @@
 # Zare
 
-A wrapper for Zare's server management API.
+A slash command Discord bot for interacting with my dedicated server, operating on Cloudflare Workers. 
 
 ## License
 
