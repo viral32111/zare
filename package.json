@@ -1,0 +1,11 @@
+{
+	"private": true,
+	"name": "zare",
+	"version": "0.1.0",
+	"description": "A slash command Discord bot for interacting with my dedicated server, operating on Cloudflare Workers. ",
+	"main": "build/zare.js",
+	"dependencies": {
+		"buffer": "^6.0.3",
+		"tweetnacl": "^1.0.3"
+	}
+}

@@ -1,0 +1,12 @@
+name = "zare"
+type = "javascript"
+
+account_id = ""
+zone_id = ""
+
+workers_dev = true
+route = ""
+
+[build]
+upload.format = "service-worker"
+command = "webpack"
