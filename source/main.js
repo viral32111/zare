@@ -1,3 +1,5 @@
+// https://discord.com/api/oauth2/authorize?client_id=841632642691760128&scope=applications.commands
+
 // Import required modules
 const nacl = require( "tweetnacl" );
 const buffer = require( "buffer" );
@@ -92,14 +94,14 @@ async function processRequest( request ) {
 		console.debug( accessToken ); */
 
 		// delete command
-		/* const deleteResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/commands/841711610119847966", {
+		/* const deleteResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/commands/841750242286108682", {
 			method: "DELETE",
 			headers: { "Authorization": "Bearer " + accessToken }
 		} );
 		console.debug( deleteResponse.status, deleteResponse.statusText, ( await deleteResponse.text() ) ); */
-	
+
 		// Create/update global slash commands
-		/* const commandResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/commands", {
+		const commandResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/commands", {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -107,33 +109,32 @@ async function processRequest( request ) {
 			},
 			body: JSON.stringify( [
 				{
-					"name": "server",
-					"description": "Interact with the Dedicated Server.",
-					"default_permission": false,
+					"name": "view",
+					"description": "View various data about the server.",
 					"options": [
 						{
 							"type": 1,
-							"name": "info",
-							"description": "View information about the server."
+							"name": "information",
+							"description": "View static information about the server."
 						},
 						{
 							"type": 1,
 							"name": "status",
-							"description": "Show the current status of the server."
+							"description": "View the current status of the server."
 						},
 						{
 							"type": 1,
 							"name": "graph",
-							"description": "Visually display networking statistics over a certain time range.",
+							"description": "View a graphical representation of various network statistics over a certain time range.",
 							"options": [
 								{
 									"type": 3,
 									"name": "type",
-									"description": "The type of statistic.",
+									"description": "The type of statistic to view.",
 									"required": true,
 									"choices": [
 										{ "name": "Traffic", "value": "traffic" },
-										{ "name": "Packets Per Second", "value": "pps" },
+										{ "name": "Packets/sec", "value": "pps" },
 										{ "name": "Average Packet Size", "value": "size" },
 										{ "name": "Port Utilization", "value": "utilization" },
 										{ "name": "Port Errors", "value": "errors" }
@@ -142,8 +143,7 @@ async function processRequest( request ) {
 								{
 									"type": 3,
 									"name": "range",
-									"description": "The time range.",
-									"required": true,
+									"description": "The range of time to view this statistic over.",
 									"choices": [
 										{ "name": "Day", "value": "day" },
 										{ "name": "Week", "value": "week" },
@@ -152,42 +152,121 @@ async function processRequest( request ) {
 								}
 							]
 						},
+					]
+				},
+				{
+					"name": "manage",
+					"description": "Remotely manage the server.",
+					"default_permission": false,
+					"options": [
 						{
 							"type": 2,
 							"name": "power",
-							"description": "Start, stop and reboot the server.",
+							"description": "Execute power actions on the server.",
 							"options": [
 								{
 									"type": 1,
-									"name": "on",
-									"description": "Turn on the server.",
+									"name": "startup",
+									"description": "Power on the server.",
 								},
 								{
 									"type": 1,
-									"name": "off",
-									"description": "Hard shutdown the server. This will instantly kill it, use with caution.",
+									"name": "shutdown",
+									"description": "Power off the server. This will cause a hard kill, so use it with caution.",
 								},
 								{
 									"type": 1,
-									"name": "cycle",
-									"description": "Reboot the server.",
+									"name": "reboot",
+									"description": "Power cycle the server. This will cause a hard kill, so use it with caution.",
 								}
 							]
 						},
 						{
 							"type": 2,
 							"name": "console",
-							"description": "Access the server's remote management interface.",
+							"description": "Interact with the out-of-band management interface on the server.",
 							"options": [
 								{
 									"type": 1,
 									"name": "credentials",
-									"description": "Generate credentials to access the server's IPMI/iKVM unit.",
+									"description": "Fetch temporary credentials to access the server console using an IPMI utility.",
 								},
 								{
 									"type": 1,
 									"name": "reset",
-									"description": "Reset the BMC unit. This very rarely need to be done.",
+									"description": "Reset the baseboard management controller, this should not need to be done that often.",
+								}
+							]
+						},
+						{
+							"type": 2,
+							"name": "protection",
+							"description": "Interact with the denial-of-service protection system on the server.",
+							"options": [
+								{
+									"type": 1,
+									"name": "history",
+									"description": "View the denial-of-service attack logs.",
+								},
+								{
+									"type": 1,
+									"name": "filter",
+									"description": "Update the configuration of how packet filtering is handled.",
+									"options": [
+										{
+											"type": 3,
+											"name": "sensitivity",
+											"description": "Adjust the sensitivity of the packet filter.",
+											"choices": [
+												{ "name": "Low", "value": "low" },
+												{ "name": "Normal", "value": "normal" },
+												{ "name": "Medium", "value": "medium" },
+												{ "name": "High", "value": "high" }
+											]
+										},
+										{
+											"type": 3,
+											"name": "redirect",
+											"description": "Adjust when the packet filter should redirect packets.",
+											"choices": [
+												{ "name": "On Attack", "value": "attack" },
+												{ "name": "Always", "value": "always" }
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": 2,
+							"name": "network",
+							"description": "Adjust the outside network configuration on the server.",
+							"options": [
+								{
+									"type": 1,
+									"name": "hostname",
+									"description": "Update the management panel hostname of the server.",
+									"options": [
+										{
+											"type": 3,
+											"name": "hostname",
+											"description": "The new management panel hostname.",
+											"required": true
+										}
+									]
+								},
+								{
+									"type": 1,
+									"name": "rdns",
+									"description": "Update the reverse DNS lookup domain name for the server.",
+									"options": [
+										{
+											"type": 3,
+											"name": "domain",
+											"description": "The new domain name for reverse DNS lookups.",
+											"required": true
+										}
+									]
 								}
 							]
 						}
@@ -195,11 +274,11 @@ async function processRequest( request ) {
 				}
 			] )
 		} );
-		const commandID = ( await commandResponse.json() )[ 0 ][ "id" ];
-		console.log( commandResponse.status, commandResponse.statusText, commandID ); // ( await commandResponse.text() )
+		console.log( commandResponse.status, commandResponse.statusText );
+		const manageCommandID = ( await commandResponse.json() )[ 1 ][ "id" ];
 
 		// Set permissions for the slash command
-		const permissionsResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/guilds/" + credentials.guild + "/commands/" + commandID + "/permissions", {
+		const permissionsResponse = await fetch( "https://discord.com/api/v8/applications/" + credentials.id + "/guilds/" + credentials.guild + "/commands/" + manageCommandID + "/permissions", {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -215,7 +294,7 @@ async function processRequest( request ) {
 				]
 			} )
 		} );
-		console.debug( permissionsResponse.status, permissionsResponse.statusText, ( await permissionsResponse.text() ) ); */
+		console.debug( permissionsResponse.status, permissionsResponse.statusText, ( await permissionsResponse.text() ) );
 
 		// Respond with a 200 ok
 		return new Response( null, { status: 200 } );
@@ -230,7 +309,7 @@ async function processRequest( request ) {
 // Called to process executed interactions...
 async function processInteraction( interaction ) {
 
-	if ( interaction[ "member" ][ "user" ][ "id" ] == credentials.me ) {
+	if ( interaction[ "member" ][ "user" ][ "id" ] != credentials.me ) {
 		return {
 			"type": 4,
 			"data": {
