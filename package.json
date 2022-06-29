@@ -6,7 +6,7 @@
 	"author": {
 		"name": "viral32111",
 		"email": "contact@viral32111.com",
-		"url": https://viral32111.com"
+		"url": "https://viral32111.com"
 	},
 	"repository": {
 		"type": "git",
@@ -17,7 +17,7 @@
 		"slash-command",
 		"cloudflare-workers"
 	],
-	"license": "AGPL-3.0-only"
+	"license": "AGPL-3.0-only",
 	"dependencies": {
 		"buffer": "^6.0.3",
 		"tweetnacl": "^1.0.3"
