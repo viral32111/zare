@@ -2,6 +2,8 @@
 
 A slash command Discord bot for interacting with my dedicated server, operating on Cloudflare Workers.
 
+**I cancelled my dedicated server from [Zare](https://zare.com) in April of 2022, therefore I no longer develop or maintain this bot.**
+
 ## License
 
 Copyright (C) 2021-2022 [viral32111](https://viral32111.com).
